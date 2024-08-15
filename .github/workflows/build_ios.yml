@@ -1,7 +1,10 @@
-name: Build and Deploy iOS App
+name: Build iOS
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -14,15 +17,13 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install CocoaPods
-      run: sudo gem install cocoapods
+      run: |
+        brew install cocoapods
 
-    - name: Install dependencies
-      run: pod install --project-directory=ios
+    - name: Install Pods
+      run: |
+        pod install --project-directory=ios
 
-    - name: Build iOS app
+    - name: Build iOS
       run: |
         xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration AppStoreDistribution archive -archivePath ${{ github.workspace }}/Runner.xcarchive
-
-    - name: Export Archive
-      run: |
-        xcodebuild -exportArchive -archivePath ${{ github.workspace }}/Runner.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath ${{ github.workspace }}/build
