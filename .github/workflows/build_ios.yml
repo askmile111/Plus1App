@@ -1,0 +1,32 @@
+name: Build and Deploy iOS App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7' # 或者你项目所需的版本
+
+    - name: Install dependencies
+      run: |
+        bundle install
+        pod install --project-directory=ios
+
+    - name: Build iOS app
+      run: |
+        xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration AppStoreDistribution archive -archivePath ${{ github.workspace }}/Runner.xcarchive
+
+    - name: Export Archive
+      run: |
+        xcodebuild -exportArchive -archivePath ${{ github.workspace }}/Runner.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath ${{ github.workspace }}/build
