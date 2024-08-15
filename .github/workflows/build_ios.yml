@@ -13,15 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '2.7' # 或者你项目所需的版本
+    - name: Install CocoaPods
+      run: sudo gem install cocoapods
 
     - name: Install dependencies
-      run: |
-        bundle install
-        pod install --project-directory=ios
+      run: pod install --project-directory=ios
 
     - name: Build iOS app
       run: |
